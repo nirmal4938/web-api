@@ -4,7 +4,7 @@ import morgan from 'morgan';
 import cors from 'cors';
 
 import routes from './routes/index.js';
-import errorHandler from './middlewares/errorHandler.js';
+import errorHandler from './middlewares/ErrorHandler.js';
 
 const app = express();
 
