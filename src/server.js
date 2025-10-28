@@ -17,9 +17,9 @@ const PORT = process.env.PORT || 5000;
 
     // 2️⃣ Run seeders automatically (safe on Render free tier)
     try {
-      console.log('🌱 Running seeders...');
-      execSync('npx sequelize-cli db:seed:all', { stdio: 'inherit' });
-      console.log('✅ Seeders executed successfully.');
+      // console.log('🌱 Running seeders...');
+      // execSync('npx sequelize-cli db:seed:all', { stdio: 'inherit' });
+      // console.log('✅ Seeders executed successfully.');
     } catch (seedError) {
       console.warn('⚠️ Seeder execution skipped or failed:', seedError.message);
     }
