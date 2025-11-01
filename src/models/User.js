@@ -30,10 +30,21 @@ export default (sequelize, DataTypes) => {
         unique: true,
         validate: { isEmail: true },
       },
+
+      // 🔐 Password is optional for OAuth users now
       password: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
       },
+
+      // 🌍 Identify authentication provider (local, google, github, etc.)
+      authProvider: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: 'local',
+        field: 'auth_provider',
+      },
+
       isActive: {
         type: DataTypes.BOOLEAN,
         defaultValue: true,
@@ -54,6 +65,7 @@ export default (sequelize, DataTypes) => {
       timestamps: true,
       paranoid: true,
       underscored: true,
+
       hooks: {
         beforeCreate: async (user) => {
           if (user.password && !user.password.startsWith('$2b$')) {
@@ -71,6 +83,7 @@ export default (sequelize, DataTypes) => {
 
   // ✅ Instance method for password validation
   User.prototype.isValidPassword = async function (password) {
+    if (!this.password) return false; // OAuth users don't have passwords
     return bcrypt.compare(password, this.password);
   };
 

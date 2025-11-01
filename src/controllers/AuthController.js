@@ -30,7 +30,7 @@ const generateTokens = (user) => {
 };
 
 // -----------------------------------------
-// Register New User
+// Register New User (Local)
 // -----------------------------------------
 export const register = async (req, res) => {
   try {
@@ -50,12 +50,18 @@ export const register = async (req, res) => {
       password: hashedPassword,
       organizationId,
       departmentId,
+      authProvider: "local", // 👈 added field
     });
 
     return res.status(201).json({
       success: true,
       message: "User registered successfully",
-      user: { id: user.id, fullName: user.fullName, email: user.email },
+      user: {
+        id: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        authProvider: user.authProvider,
+      },
     });
   } catch (err) {
     console.error("Register error:", err);
