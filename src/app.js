@@ -36,6 +36,9 @@ app.use(express.urlencoded({ extended: true }));
 // ✅ Logging
 app.use(morgan("dev"));
 
+app.set("trust proxy", true);
+
+
 // ✅ Routes
 app.use("/api", routes);
 

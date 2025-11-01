@@ -72,7 +72,7 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
   const ip = req.ip || req.headers["x-forwarded-for"];
   const agent = req.headers["user-agent"];
-
+  // console.log("IP________", ip)
   try {
     const user = await db.User.findOne({
       where: { email },

@@ -14,5 +14,8 @@ router.post("/register", validate(registerSchema), register);
 router.post("/login", validate(loginSchema), login);
 router.post("/logout", logout);
 router.post("/refresh", refreshToken);
+router.post("/google", refreshToken);
+router.post("/google/callback", refreshToken);
+
 
 export default router;

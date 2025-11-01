@@ -1,4 +1,7 @@
 // controllers/SessionController.js
+import { db } from "../models/index.js";
+
+
 export const getActiveSessions = async (req, res) => {
   try {
     const sessions = await db.Session.findAll({
