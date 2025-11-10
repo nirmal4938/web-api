@@ -18,6 +18,7 @@ import VoterRoutes from './VoterRoutes.js';
 import VoteRoutes from './VoteRoutes.js';
 import ElectionResultRoutes from './ElectionResultRoutes.js';
 
+import ChatRoutes from './ChatRoutes.js'
 const router = Router();
 
 // 🩺 Health Check
@@ -41,5 +42,7 @@ router.use('/candidates', CandidateRoutes);
 router.use('/voters', VoterRoutes);
 router.use('/votes', VoteRoutes);
 router.use('/results', ElectionResultRoutes);
+
+router.use('/chat', ChatRoutes);
 
 export default router;
