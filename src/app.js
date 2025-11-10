@@ -31,7 +31,7 @@ const app = express();
 // };
 
 const corsOptions = {
-  origin: ["http://localhost:5173", "http://127.0.0.1:5173", "https://web-ui-d5g8.onrender.com", "https://syncware.fun/"],
+  origin: ["http://localhost:5173", "http://127.0.0.1:5173", "https://web-ui-d5g8.onrender.com", "https://syncware.fun"],
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -42,7 +42,7 @@ app.use(cors(corsOptions));
 // app.options(/.*/, cors(corsOptions));
 
 // ✅ Apply cors() globally first
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 
 // ✅ Handle preflight (OPTIONS) with same config
 // app.options(/.*/, cors(corsOptions));
