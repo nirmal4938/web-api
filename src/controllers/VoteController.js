@@ -1,7 +1,7 @@
 // src/controllers/VoteController.js
 import { db } from "../models/index.js";
 
-const { Vote, ElectionCandidate, Voter } = db;
+const { Vote, ElectionCandidate, Voter, Election } = db;
 
 export const castVote = async (req, res) => {
   try {
@@ -105,3 +105,48 @@ export const deleteVote = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+
+//
+
+// 🧾 Get logged-in user's vote
+export const getUserVote = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const vote = await Vote.findOne({
+      where: { userId },
+      include: [
+        {
+          model: ElectionCandidate,
+          as: "candidate",
+          attributes: ["id", "fullName", "partyName", "partySymbol"],
+        },
+        {
+          model: Election,
+          as: "election",
+          // location
+          attributes: ["id", "name", ],
+        },
+      ],
+    });
+
+    if (!vote) {
+      return res.status(200).json({ success: true, vote: null });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Vote retrieved successfully",
+      vote,
+    });
+  } catch (error) {
+    console.error("Error fetching user vote:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch vote",
+      error: error.message,
+    });
+  }
+};
+
