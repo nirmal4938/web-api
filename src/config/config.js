@@ -1,40 +1,3 @@
-// import dotenv from 'dotenv';
-// import path from 'path';
-// import { fileURLToPath } from 'url';
-
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
-
-// dotenv.config({ path: path.resolve(__dirname, '../../.env') });
-
-// const config = {
-//   development: {
-//     username: process.env.DB_USERNAME,
-//     password: process.env.DB_PASSWORD,
-//     database: process.env.DB_NAME,
-//     host: process.env.DB_HOST,
-//     port: process.env.DB_PORT || 5432,
-//     dialect: process.env.DB_DIALECT || 'postgres',
-//   },
-//   test: {
-//     username: process.env.DB_USERNAME || 'postgres',
-//     password: process.env.DB_PASSWORD || 'test_password',
-//     database: process.env.TEST_DB_NAME || 'test_db',
-//     host: process.env.DB_HOST || '127.0.0.1',
-//     dialect: process.env.DB_DIALECT || 'postgres',
-//   },
-//   production: {
-//     username: process.env.DB_USERNAME,
-//     password: process.env.DB_PASSWORD,
-//     database: process.env.PROD_DB_NAME || 'prod_db',
-//     host: process.env.DB_HOST,
-//     dialect: process.env.DB_DIALECT || 'postgres',
-//   },
-// };
-
-// export default config;
-
-
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -42,9 +5,18 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Choose which .env file to load
-const envFile =
-  process.env.NODE_ENV === "production" ? ".env.production" : ".env.local";
+// Load correct env file
+let envFile;
+switch (process.env.NODE_ENV) {
+  case "production":
+    envFile = ".env.production";
+    break;
+  case "staging":
+    envFile = ".env.staging";
+    break;
+  default:
+    envFile = ".env.local";
+}
 
 dotenv.config({ path: path.resolve(__dirname, `../../${envFile}`) });
 
@@ -53,17 +25,11 @@ const commonConfig = {
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   host: process.env.DB_HOST,
-  port: process.env.DB_PORT || 5432,
+  port: parseInt(process.env.DB_PORT, 10) || 5432,
   dialect: process.env.DB_DIALECT || "postgres",
-  logging: process.env.NODE_ENV !== "production",
+  logging: process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "staging",
   dialectOptions: {
-    ssl:
-      process.env.NODE_ENV === "production"
-        ? {
-            require: true,
-            rejectUnauthorized: false,
-          }
-        : false,
+    ssl: process.env.DB_SSL === "true" ? { require: true, rejectUnauthorized: false } : false,
   },
 };
 
@@ -71,6 +37,7 @@ const config = {
   development: { ...commonConfig },
   test: { ...commonConfig },
   production: { ...commonConfig },
+  staging: { ...commonConfig },
 };
 
 export default config;
