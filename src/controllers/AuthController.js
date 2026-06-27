@@ -366,8 +366,16 @@ export const login = async (req, res) => {
 
     const rootDomain = process.env.ROOT_DOMAIN || "syncware.fun";
 
-    let redirectUrl = "";
-    redirectUrl: `https://${business.category.subdomain}.${rootDomain}`;
+    const subdomain = business?.category?.subdomain;
+
+    if (!subdomain) {
+      return res.status(500).json({
+        success: false,
+        message: "Business category subdomain missing",
+      });
+    }
+
+    const redirectUrl = `https://${subdomain}.${rootDomain}/dashboard`;
 
     // ------------------------------------------------
     // BUSINESS ROLE
