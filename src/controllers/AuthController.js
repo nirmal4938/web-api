@@ -116,19 +116,21 @@ export const login = async (req, res) => {
     // DOMAIN / CATEGORY
     // ------------------------------------------------
 
-    const host = req.hostname;
-
-    // localhost
-    // syncware.fun
-    // mobile.syncware.fun
-    // garments.syncware.fun
-
     let subdomain = null;
 
-    const parts = host.split(".");
+    const origin = req.headers.origin;
 
-    if (host !== "localhost" && parts.length > 2) {
-      subdomain = parts[0];
+    if (origin) {
+      try {
+        const host = new URL(origin).hostname;
+        const parts = host.split(".");
+
+        if (parts.length >= 3) {
+          subdomain = parts[0];
+        }
+      } catch (err) {
+        subdomain = null;
+      }
     }
 
     let category = null;
