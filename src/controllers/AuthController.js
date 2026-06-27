@@ -368,11 +368,7 @@ export const login = async (req, res) => {
 
     let redirectUrl = "";
 
-    if (business.domain) {
-      redirectUrl = `https://${business.domain}/dashboard`;
-    } else {
-      redirectUrl = `https://${business.category.subdomain}.${rootDomain}/dashboard`;
-    }
+    redirectUrl = `https://${business.category.subdomain}.${rootDomain}/dashboard`;
 
     // ------------------------------------------------
     // BUSINESS ROLE
