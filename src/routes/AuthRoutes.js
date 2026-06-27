@@ -17,14 +17,12 @@
 // router.post("/google", authGooge);
 // router.post("/google/callback", authGoogleCallback);
 
-
 // export default router;
-
-
 
 // src/auth/authRoutes.js
 import express from "express";
 import passport from "../config/passport.js";
+import { bootstrap } from "../controllers/AuthController.js";
 import {
   register,
   login,
@@ -41,7 +39,6 @@ router.post("/login", login);
 router.post("/logout", logout);
 router.post("/refresh", refreshToken);
 
-
 // Google OAuth start
 router.get("/google/url", (req, res) => {
   const googleAuthURL = `${process.env.API_BASE_URL || "http://localhost:5000/api"}/auth/google`;
@@ -49,14 +46,17 @@ router.get("/google/url", (req, res) => {
 });
 router.get(
   "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
+  passport.authenticate("google", { scope: ["profile", "email"] }),
 );
 
 // Google OAuth callback
 
 router.get(
   "/google/callback",
-  passport.authenticate("google", { failureRedirect: "/login", session: false }),
+  passport.authenticate("google", {
+    failureRedirect: "/login",
+    session: false,
+  }),
   (req, res) => {
     const { token, refreshToken } = req.user;
 
@@ -64,12 +64,12 @@ router.get(
     const isProduction = process.env.NODE_ENV === "production";
 
     // Your frontend base URL (both for local + production)
-    const FRONTEND_URL = process.env.FRONTEND_URL
+    const FRONTEND_URL = process.env.FRONTEND_URL;
 
     // ✅ Set secure, cross-site compatible cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: isProduction,        // 🔒 true in production (Render uses HTTPS)
+      secure: isProduction, // 🔒 true in production (Render uses HTTPS)
       sameSite: isProduction ? "None" : "Lax", // allow cross-site in prod
       path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
@@ -78,10 +78,8 @@ router.get(
     // ✅ Redirect user back to frontend with short-lived token
     const redirectURL = `${FRONTEND_URL}/auth/success?token=${token}`;
     return res.redirect(redirectURL);
-  }
+  },
 );
-
-
 
 // router.get(
 //   "/google/callback",
@@ -102,7 +100,6 @@ router.get(
 //     return res.redirect(redirectURL);
 //   }
 // );
-
 
 // router.get(
 //   "/google/callback",
@@ -130,5 +127,11 @@ router.get("/me", authenticateJWT, (req, res) => {
     user: req.user,
   });
 });
+router.get("/tenant-session", authenticateJWT, (req, res) => {
+  return res.json({
+    user: req.user,
+  });
+});
+router.post("/bootstrap", bootstrap);
 
 export default router;

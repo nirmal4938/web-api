@@ -1,6 +1,6 @@
 export default (sequelize, DataTypes) => {
   const Resource = sequelize.define(
-    'Resource',
+    "Resource",
     {
       id: {
         type: DataTypes.UUID,
@@ -18,20 +18,26 @@ export default (sequelize, DataTypes) => {
       description: {
         type: DataTypes.TEXT,
       },
+      slug: {
+        type: DataTypes.STRING,
+        allowNull: false,
+
+        unique: true,
+      },
     },
     {
-      tableName: 'resources',
+      tableName: "resources",
       timestamps: true,
       underscored: true,
-    }
+    },
   );
 
   Resource.associate = (models) => {
     // A resource can have multiple permissions linked to it
     Resource.hasMany(models.Permission, {
-      foreignKey: 'resource_id',
-      as: 'permissions',
-      onDelete: 'CASCADE',
+      foreignKey: "resource_id",
+      as: "permissions",
+      onDelete: "CASCADE",
     });
 
     // Optional: If you use attributes per resource

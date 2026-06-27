@@ -1,7 +1,7 @@
-// models/Department.js
+// models/Organization.js
 export default (sequelize, DataTypes) => {
-  const Department = sequelize.define(
-    "Department",
+  const Organization = sequelize.define(
+    "Organization",
     {
       id: {
         type: DataTypes.UUID,
@@ -11,7 +11,11 @@ export default (sequelize, DataTypes) => {
       name: {
         type: DataTypes.STRING,
         allowNull: false,
-        validate: { notEmpty: { msg: "Department name is required" } },
+        validate: { notEmpty: { msg: "Organization name is required" } },
+      },
+      domain: {
+        type: DataTypes.STRING,
+        allowNull: true,
       },
       createdAt: {
         type: DataTypes.DATE,
@@ -25,18 +29,22 @@ export default (sequelize, DataTypes) => {
       },
     },
     {
-      tableName: "departments",
+      tableName: "organizations",
       timestamps: true,
       underscored: true,
     },
   );
 
-  Department.associate = (models) => {
-    Department.hasMany(models.User, {
-      foreignKey: "department_id",
+  Organization.associate = (models) => {
+    Organization.hasMany(models.Department, {
+      foreignKey: "organization_id",
+      as: "departments",
+    });
+    Organization.hasMany(models.User, {
+      foreignKey: "organization_id",
       as: "users",
     });
   };
 
-  return Department;
+  return Organization;
 };

@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import passport from "./config/passport.js";
 import routes from "./routes/index.js";
 import errorHandler from "./middlewares/ErrorHandler.js";
-
+import { tenantMiddleware } from "./middlewares/tenantMiddleware.js";
 const app = express();
 
 // const allowedOrigins = [
@@ -31,15 +31,27 @@ const app = express();
 // };
 
 const corsOptions = {
-  origin: ["http://localhost:5173", "http://127.0.0.1:5173", "https://web-ui-d5g8.onrender.com", "https://syncware.fun"],
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5173",
+    "https://web-ui-d5g8.onrender.com",
+    "https://syncware.fun",
+    "https://mobile.syncware.fun",
+    "https://api.mobile.syncware.fun",
+  ],
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   exposedHeaders: ["set-cookie"],
 };
 
+// app.use(cors(corsOptions));
+// app.options("*", (req, res) => {
+//   res.sendStatus(204);
+// });
 app.use(cors(corsOptions));
-// app.options(/.*/, cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
 
 // ✅ Apply cors() globally first
 // app.use(cors(corsOptions));
@@ -54,6 +66,7 @@ app.use(morgan("dev"));
 app.set("trust proxy", 1);
 
 app.use(passport.initialize());
+app.use(tenantMiddleware);
 app.use("/api", routes);
 app.use(errorHandler);
 

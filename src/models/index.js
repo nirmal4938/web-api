@@ -1,11 +1,11 @@
-'use strict';
+"use strict";
 
-import fs from 'fs';
-import path from 'path';
-import Sequelize from 'sequelize';
-import { fileURLToPath, pathToFileURL } from 'url';
-import { dirname } from 'path';
-import configFile from '../config/config.js';
+import fs from "fs";
+import path from "path";
+import Sequelize from "sequelize";
+import { fileURLToPath, pathToFileURL } from "url";
+import { dirname } from "path";
+import configFile from "../config/config.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -17,20 +17,25 @@ const db = {};
 let sequelize;
 
 // ✅ Initialize Sequelize connection
-sequelize = new Sequelize(config.database, config.username, config.password, config);
+sequelize = new Sequelize(
+  config.database,
+  config.username,
+  config.password,
+  config,
+);
 
 // ✅ Step 1: Load all models
 const modelFiles = fs
   .readdirSync(__dirname)
   .filter(
     (file) =>
-      file.indexOf('.') !== 0 &&
+      file.indexOf(".") !== 0 &&
       file !== basename &&
-      file.endsWith('.js') &&
-      !file.endsWith('.test.js')
+      file.endsWith(".js") &&
+      !file.endsWith(".test.js"),
   );
 
-console.log('🧩 Loading models in order:', modelFiles);
+console.log("🧩 Loading models in order:", modelFiles);
 
 for (const file of modelFiles) {
   const modelModule = await import(pathToFileURL(path.join(__dirname, file)));
@@ -40,7 +45,8 @@ for (const file of modelFiles) {
 
 // ✅ Step 2: Run associations
 Object.keys(db).forEach((modelName) => {
-  if (typeof db[modelName].associate === 'function') db[modelName].associate(db);
+  if (typeof db[modelName].associate === "function")
+    db[modelName].associate(db);
 });
 
 // ✅ Step 3: Export sequelize + db
@@ -50,15 +56,18 @@ db.Sequelize = Sequelize;
 // ✅ Test DB connection
 try {
   await sequelize.authenticate();
-  console.log('✅ Database connected successfully.');
+  console.log("✅ Database connected successfully.");
 } catch (err) {
-  console.error('❌ Unable to connect to database:', err.message);
+  console.error("❌ Unable to connect to database:", err.message);
 }
 
 // ✅ Optional: Sync models in dev
-if (env === 'development') {
-  // await sequelize.sync({ alter: true });
-  console.log('✅ Models synchronized successfully.');
+if (env === "development") {
+  // await sequelize.sync({
+  //   force: true,
+  //   logging: console.log,
+  // });
+  console.log("✅ Models synchronized successfully.");
 }
 
 export { sequelize, db };
