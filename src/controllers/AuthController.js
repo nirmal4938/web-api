@@ -367,8 +367,7 @@ export const login = async (req, res) => {
     const rootDomain = process.env.ROOT_DOMAIN || "syncware.fun";
 
     let redirectUrl = "";
-
-    redirectUrl = `https://${business.category.subdomain}.${rootDomain}/dashboard`;
+    redirectUrl: `https://${business.category.subdomain}.${rootDomain}`;
 
     // ------------------------------------------------
     // BUSINESS ROLE
