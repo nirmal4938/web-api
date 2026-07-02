@@ -46,6 +46,7 @@ class StorefrontRepository {
    */
 
   async findStorefront(context) {
+    console.log("hostname----", context.hostname);
     const slug = this.extractSlug(context.hostname);
 
     return this.findBusinessBySlug(slug, context.hostname);
@@ -95,6 +96,7 @@ class StorefrontRepository {
 
   async findBusinessBySlug(slug, hostname) {
     try {
+      console.log("Searching business with slug:", slug);
       const business = await db.Business.findOne({
         where: { slug },
         include: [
