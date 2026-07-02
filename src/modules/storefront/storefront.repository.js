@@ -5,129 +5,174 @@
 //
 // Responsibilities
 //
-// • Interact with the database
-// • Retrieve Storefront entities
-// • Never contain business logic
-// • Never know about Express
+// • Resolve tenant from hostname
+// • Query PostgreSQL
+// • Return normalized business object
 //
-// Sprint-2
-// --------
-// PostgreSQL queries.
+// This layer NEVER knows about Express.
+//
 // ============================================================
 
 import { db } from "../../models/index.js";
 
+const DEVELOPMENT_SLUG =
+  process.env.STOREFRONT_DEVELOPMENT_SLUG || "rajmobiles";
+
 class StorefrontRepository {
-  /**
-   * ==========================================================
-   * Find Storefront
-   * ==========================================================
-   *
-   * Input
-   *
-   * {
-   *   hostname,
-   *   protocol,
-   *   origin,
-   *   ...
-   * }
-   *
-   * Future
-   *
-   * hostname
-   *      ↓
-   * Extract slug
-   *      ↓
-   * SELECT *
-   * FROM businesses
-   * WHERE slug = ?
-   *
-   * ==========================================================
-   */
+  // ==========================================================
+  // Public
+  // ==========================================================
 
   async findStorefront(context) {
-    console.log("hostname----", context.hostname);
-    const slug = this.extractSlug(context.hostname);
+    const hostname = this.normalizeHostname(context.hostname);
 
-    return this.findBusinessBySlug(slug, context.hostname);
-  }
+    const slug = this.resolveSlug(hostname);
 
-  /**
-   * ==========================================================
-   * Extract Tenant Slug
-   * ==========================================================
-   */
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    console.log("🏪 Storefront Resolution");
+    console.log("Hostname :", hostname);
+    console.log("Slug     :", slug);
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-  extractSlug(hostname) {
-    // --------------------------------------------
-    // Local Development
-    // --------------------------------------------
-
-    if (hostname === "localhost" || hostname === "127.0.0.1") {
-      return "rajmobiles";
+    if (!slug) {
+      return null;
     }
 
-    // --------------------------------------------
-    // *.syncware.fun
-    // --------------------------------------------
+    return this.findBusinessBySlug(slug, hostname);
+  }
 
-    return hostname.split(".")[0];
+  // ==========================================================
+  // Hostname Helpers
+  // ==========================================================
+
+  normalizeHostname(hostname) {
+    if (!hostname) {
+      return "";
+    }
+
+    return hostname
+      .trim()
+      .toLowerCase()
+      .replace(/^https?:\/\//, "")
+      .split(":")[0];
+  }
+
+  resolveSlug(hostname) {
+    if (this.isDevelopmentHost(hostname)) {
+      return DEVELOPMENT_SLUG;
+    }
+
+    return this.extractSubdomain(hostname);
+  }
+
+  isDevelopmentHost(hostname) {
+    return (
+      hostname === "localhost" ||
+      hostname === "127.0.0.1" ||
+      hostname.startsWith("192.168.") ||
+      hostname.startsWith("10.") ||
+      hostname.endsWith(".local")
+    );
   }
 
   /**
-   * ==========================================================
-   * Find Business By Slug
-   * ==========================================================
+   * Examples
    *
-   * SELECT
-   *      b.id,
-   *      b.slug,
-   *      b.name,
-   *      b.status,
-   *      bc.key,
-   *      bc.name
-   * FROM businesses b
-   * JOIN business_categories bc
-   *      ON bc.id = b.business_category_id
-   * WHERE b.slug = ?
+   * raj.syncware.fun
+   * → raj
    *
-   * ==========================================================
+   * abc.syncware.fun
+   * → abc
+   *
+   * demo.shop.syncware.fun
+   * → demo
+   *
+   * syncware.fun
+   * → null
+   *
+   * web-api-qzo8.onrender.com
+   * → null
    */
+
+  extractSubdomain(hostname) {
+    const parts = hostname.split(".");
+
+    // ignore root domains
+    if (parts.length < 3) {
+      return null;
+    }
+
+    return parts[0];
+  }
+
+  // ==========================================================
+  // Database
+  // ==========================================================
 
   async findBusinessBySlug(slug, hostname) {
     try {
-      console.log("Searching business with slug:", slug);
+      console.log(`🔍 Looking for business "${slug}"`);
+
       const business = await db.Business.findOne({
-        where: { slug },
+        where: {
+          slug,
+          status: "ACTIVE",
+        },
+
         include: [
           {
             model: db.BusinessCategory,
             as: "category",
-            attributes: ["key", "name"],
+            attributes: ["id", "key", "name"],
           },
         ],
       });
 
       if (!business) {
+        console.log(`❌ Business "${slug}" not found`);
         return null;
       }
 
-      // Normalize business object to match expected shape
-      return {
-        id: business.id,
-        slug: business.slug,
-        name: business.name,
-        status: business.status, // This will be "ACTIVE", "INACTIVE", or "SUSPENDED"
-        category: business.category.key, // Using the key as in the mock (e.g., "garments")
-        hostname: hostname,
-      };
+      console.log(`✅ Business resolved → ${business.name} (${business.slug})`);
+
+      return this.mapBusiness(business, hostname);
     } catch (error) {
-      // Log the error for debugging but return null to let service handle "not found" case
-      // In production, you might want to throw an error, but the current contract expects null for not found
-      // and service throws appropriate errors. We'll log and return null for any error to maintain contract.
-      console.error("Error in storefront repository:", error);
-      return null;
+      console.error("❌ StorefrontRepository.findBusinessBySlug");
+      console.error(error);
+
+      throw error;
     }
+  }
+
+  // ==========================================================
+  // Mapper
+  // ==========================================================
+
+  mapBusiness(business, hostname) {
+    return {
+      id: business.id,
+      slug: business.slug,
+      name: business.name,
+      hostname,
+      domain: business.domain,
+      status: business.status,
+      plan: business.plan,
+      logoUrl: business.logoUrl,
+      phone: business.phone,
+      email: business.email,
+      timezone: business.timezone,
+      address: business.address,
+      city: business.city,
+      state: business.state,
+      country: business.country,
+      category: {
+        id: business.category?.id,
+        key: business.category?.key,
+        name: business.category?.name,
+      },
+      createdAt: business.createdAt,
+      updatedAt: business.updatedAt,
+    };
   }
 }
 

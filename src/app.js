@@ -50,12 +50,10 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin(origin, callback) {
-    // Postman / Mobile Apps / Server-to-Server
     if (!origin) {
       return callback(null, true);
     }
 
-    // Explicit allow-list
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
@@ -63,12 +61,10 @@ const corsOptions = {
     try {
       const hostname = new URL(origin).hostname;
 
-      // Allow platform root
       if (hostname === "syncware.fun") {
         return callback(null, true);
       }
 
-      // Allow every tenant & category app
       if (hostname.endsWith(".syncware.fun")) {
         return callback(null, true);
       }
@@ -85,9 +81,14 @@ const corsOptions = {
 
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 
-  allowedHeaders: ["Content-Type", "Authorization", "X-App-Name"],
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "X-App-Name",
+    "X-Tenant-Host", // ✅ Required for storefront resolution
+  ],
 
-  exposedHeaders: ["set-cookie"],
+  exposedHeaders: ["Set-Cookie"],
 };
 
 app.use(cors(corsOptions));

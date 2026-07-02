@@ -47,6 +47,11 @@ class StorefrontService {
   async bootstrap(req) {
     const context = this.resolveRequestContext(req);
 
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    console.log("Storefront Context");
+    console.log(context);
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
     const storefront = await this.resolveStorefront(context);
 
     this.validateStorefront(storefront);
@@ -60,16 +65,28 @@ class StorefrontService {
    * ==========================================================
    * Resolve Request Context
    * ==========================================================
+   *
+   * Host Resolution Priority
+   *
+   * 1. X-Tenant-Host
+   *    (Frontend sends the original storefront hostname)
+   *
+   * 2. Express hostname
+   *    (Useful for local development)
+   *
+   * ==========================================================
    */
 
   resolveRequestContext(req) {
+    const tenantHost = req.get("X-Tenant-Host");
+
     return {
-      hostname: req.hostname,
+      hostname: tenantHost || req.hostname,
       protocol: req.protocol,
       origin: req.get("origin"),
-      userAgent: req.get("user-agent"),
-      language: req.get("accept-language"),
       ip: req.ip,
+      language: req.get("accept-language"),
+      userAgent: req.get("user-agent"),
     };
   }
 
