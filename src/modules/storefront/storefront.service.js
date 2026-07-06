@@ -22,7 +22,7 @@
 // ============================================================
 
 import storefrontRepository from "./storefront.repository.js";
-
+import runtimeBuilder from "./builders/storefront-runtime.builder.js";
 class StorefrontService {
   /**
    * ==========================================================
@@ -56,8 +56,8 @@ class StorefrontService {
 
     this.validateStorefront(storefront);
 
-    const runtime = await this.loadStorefrontRuntime(storefront);
-
+    // const runtime = await this.loadStorefrontRuntime(storefront);
+    const runtime = await runtimeBuilder.build(storefront);
     return this.buildBootstrapResponse(runtime);
   }
 
@@ -133,51 +133,6 @@ class StorefrontService {
 
       throw error;
     }
-  }
-
-  /**
-   * ==========================================================
-   * Load Storefront Runtime
-   * ==========================================================
-   *
-   * Eventually this method will aggregate:
-   *
-   * Business
-   * Settings
-   * Theme
-   * Navigation
-   * Home
-   * Collections
-   * Products
-   * Offers
-   * Reviews
-   * SEO
-   *
-   * ==========================================================
-   */
-
-  async loadStorefrontRuntime(storefront) {
-    return {
-      business: storefront,
-
-      settings: {},
-
-      theme: {},
-
-      navigation: {},
-
-      home: {},
-
-      collections: [],
-
-      products: [],
-
-      offers: [],
-
-      reviews: [],
-
-      seo: {},
-    };
   }
 
   /**
