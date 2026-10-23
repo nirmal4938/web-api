@@ -1,5 +1,93 @@
 export default [
   // ------------------------------------------------
+  // PLATFORM ADMINISTRATION
+  // ------------------------------------------------
+
+  {
+    slug: "admin:panel",
+
+    resource: "admin",
+
+    action: "manage",
+
+    name: "Access Administration Panel",
+
+    description: "Access the platform administration panel",
+  },
+
+  {
+    slug: "admin:users",
+
+    resource: "admin",
+
+    action: "manage",
+
+    name: "Manage Admin Users",
+
+    description: "Manage platform users",
+  },
+
+  {
+    slug: "admin:roles",
+
+    resource: "admin",
+
+    action: "manage",
+
+    name: "Manage Admin Roles",
+
+    description: "Manage platform roles",
+  },
+
+  {
+    slug: "admin:permissions",
+
+    resource: "admin",
+
+    action: "manage",
+
+    name: "Manage Admin Permissions",
+
+    description: "Manage platform permissions",
+  },
+
+  {
+    slug: "admin:subdomains",
+
+    resource: "admin",
+
+    action: "manage",
+
+    name: "Manage Admin Subdomains",
+
+    description: "Manage platform subdomains",
+  },
+
+  {
+    slug: "admin:billing",
+
+    resource: "admin",
+
+    action: "manage",
+
+    name: "Manage Admin Billing",
+
+    description: "Manage platform billing",
+  },
+
+  {
+    slug: "admin:settings",
+
+    resource: "admin",
+
+    action: "manage",
+
+    name: "Manage Admin Settings",
+
+    description: "Manage platform system configurations",
+  },
+
+  // ------------------------------------------------
   // SALES
   // ------------------------------------------------
 

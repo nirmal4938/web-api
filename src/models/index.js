@@ -67,6 +67,7 @@ if (env === "development") {
   //   force: true,
   //   logging: console.log,
   // });
+  // await sequelize.sync({ alter: true });
   console.log("✅ Models synchronized successfully.");
 }
 

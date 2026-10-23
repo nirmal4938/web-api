@@ -29,6 +29,7 @@ import TenantRoutes from "./tenant.routes.js";
 // ============================================================
 
 import StorefrontRoutes from "../modules/storefront/storefront.routes.js";
+import EducationRoutes from "./EducationRoutes.js";
 
 const router = Router();
 
@@ -74,6 +75,12 @@ router.use("/tenant", TenantRoutes);
 // ============================================================
 
 router.use("/storefront", StorefrontRoutes);
+
+// ============================================================
+// 🎓 Education & SaaS Automation Module
+// ============================================================
+// router.use("/education", FeeRoutes);
+router.use("/education", EducationRoutes);
 
 // ============================================================
 // 🏏 Cricket

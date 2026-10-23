@@ -155,7 +155,8 @@ export async function up(queryInterface) {
     // =====================================================
 
     for (const permission of CUSTOM_PERMISSIONS) {
-      const slug = `${permission.resource}:${permission.action}`;
+      const slug =
+        permission.slug || `${permission.resource}:${permission.action}`;
 
       if (existingSlugs.has(slug)) continue;
 
@@ -170,7 +171,7 @@ export async function up(queryInterface) {
 
         resource_id: resourceMap[permission.resource],
 
-        feature_id: featureMap[permission.feature],
+        feature_id: featureMap[permission.feature] || null,
 
         action: permission.action,
 
@@ -227,7 +228,9 @@ export async function down(queryInterface) {
     // CUSTOM
 
     for (const permission of CUSTOM_PERMISSIONS) {
-      slugs.push(`${permission.resource}:${permission.action}`);
+      slugs.push(
+        permission.slug || `${permission.resource}:${permission.action}`,
+      );
     }
 
     await queryInterface.bulkDelete(

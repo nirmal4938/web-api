@@ -1,4 +1,14 @@
 export default [
+  {
+    slug: "admin",
+
+    name: "Administration",
+
+    type: "entity",
+
+    description: "Platform administration",
+  },
+
   // ------------------------------------------------
   // COMMON
   // ------------------------------------------------

@@ -80,7 +80,7 @@ export const login = async (req, res) => {
     // ------------------------------------------------
     // USER
     // ------------------------------------------------
-
+    console.log("payload", email, password);
     const user = await db.User.findOne({
       where: { email },
 
@@ -88,6 +88,7 @@ export const login = async (req, res) => {
         include: ["password"],
       },
     });
+    console.log("user", user);
 
     if (!user) {
       return res.status(404).json({
